@@ -1,17 +1,22 @@
 :root {
-  --bg: #10131f;
-  --panel: #181d2d;
-  --panel-strong: #21283d;
+  --bg-deep: #000814;
+  --bg-mid: #001428;
+  --bg-light: #002847;
+  --panel: rgba(0, 24, 48, 0.72);
+  --panel-strong: rgba(0, 36, 72, 0.82);
   --text: #ffffff;
-  --muted: #aeb6ca;
-  --border: rgba(255, 255, 255, 0.14);
-  --accent: #f8c84e;
-  --win: #4ee08a;
-  --lose: #ff6b6b;
-  --draw: #73b7ff;
+  --muted: rgba(186, 220, 255, 0.78);
+  --border: rgba(0, 212, 255, 0.24);
+  --accent: #00d4ff;
+  --accent-soft: #4de8ff;
+  --accent-glow: rgba(0, 212, 255, 0.42);
+  --win: #6ef7d8;
+  --lose: #ff8fab;
+  --draw: #8fd4ff;
   --radius-lg: 28px;
   --radius-md: 18px;
-  --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  --glass-blur: blur(18px);
 }
 
 * {
@@ -28,7 +33,10 @@ body {
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at top, #29334f 0%, var(--bg) 58%);
+  background:
+    radial-gradient(circle at 20% 0%, rgba(0, 174, 239, 0.18) 0%, transparent 42%),
+    radial-gradient(circle at 80% 100%, rgba(0, 80, 160, 0.28) 0%, transparent 48%),
+    linear-gradient(160deg, var(--bg-light) 0%, var(--bg-mid) 42%, var(--bg-deep) 100%);
 }
 
 button {
@@ -42,26 +50,28 @@ button {
   padding: 32px;
 }
 
-.panel,
-.display-board {
-  width: min(100%, 1080px);
-  background: rgba(24, 29, 45, 0.92);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+.app--display {
+  padding: 0;
 }
 
 .panel {
+  width: min(100%, 1080px);
   padding: clamp(28px, 5vw, 64px);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow), 0 0 48px rgba(0, 212, 255, 0.08);
+  backdrop-filter: var(--glass-blur);
 }
 
 .eyebrow {
   margin: 0 0 12px;
-  color: var(--accent);
+  color: var(--accent-soft);
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  text-shadow: 0 0 18px var(--accent-glow);
 }
 
 .title {
@@ -90,11 +100,19 @@ button {
   gap: 12px;
   padding: 28px;
   color: var(--text);
-  background: var(--panel-strong);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(0, 40, 80, 0.55) 100%);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.22);
   cursor: pointer;
-  transition: transform 160ms ease, background 160ms ease;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.hand-button:hover:not(:disabled) {
+  border-color: rgba(0, 212, 255, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 24px rgba(0, 212, 255, 0.18);
 }
 
 .hand-button:active:not(:disabled) {
@@ -109,6 +127,7 @@ button {
 
 .hand-button__icon {
   font-size: clamp(56px, 9vw, 96px);
+  filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.25));
 }
 
 .hand-button__label {
@@ -124,10 +143,16 @@ button {
   min-width: 160px;
   padding: 14px 22px;
   color: var(--text);
-  background: transparent;
+  background: rgba(0, 212, 255, 0.08);
   border: 1px solid var(--border);
   border-radius: 999px;
   cursor: pointer;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+
+.sub-button:hover {
+  background: rgba(0, 212, 255, 0.16);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.16);
 }
 
 .status-text {
@@ -136,15 +161,58 @@ button {
   font-size: 16px;
 }
 
-.display-board {
-  min-height: calc(100vh - 64px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: clamp(28px, 5vw, 64px);
+.display-stage {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: minmax(42vh, 1fr) auto;
 }
 
-.display-board__header {
+.display-stage__backdrop {
+  position: relative;
+  min-height: 42vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(0, 174, 239, 0.22) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(0, 40, 80, 0.35) 0%, rgba(0, 8, 20, 0.95) 100%);
+}
+
+.display-stage__hero {
+  width: 100%;
+  height: 100%;
+  min-height: 42vh;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 1;
+  transition: opacity 420ms ease, transform 620ms ease;
+}
+
+.display-stage__hero.is-changing {
+  opacity: 0.35;
+  transform: scale(1.03);
+}
+
+.display-stage__glow {
+  position: absolute;
+  inset: auto 0 0;
+  height: 120px;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 8, 20, 0.95) 100%);
+  pointer-events: none;
+}
+
+.display-stage__content {
+  position: relative;
+  z-index: 1;
+  margin-top: -48px;
+  padding: 0 clamp(20px, 4vw, 56px) clamp(24px, 4vw, 48px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 3vw, 32px);
+}
+
+.display-stage__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -161,16 +229,17 @@ button {
 .result-area {
   display: grid;
   place-items: center;
-  padding: clamp(30px, 5vw, 70px) 0;
+  padding: clamp(8px, 2vw, 24px) 0;
 }
 
 .result-label {
   margin: 0;
-  font-size: clamp(72px, 16vw, 190px);
+  font-size: clamp(56px, 12vw, 140px);
   font-weight: 1000;
   line-height: 0.9;
-  letter-spacing: -0.08em;
-  transition: transform 220ms ease, opacity 220ms ease;
+  letter-spacing: -0.06em;
+  text-shadow: 0 0 32px rgba(0, 212, 255, 0.18);
+  transition: transform 220ms ease, opacity 220ms ease, color 220ms ease;
 }
 
 .result-label.is-countdown {
@@ -181,20 +250,32 @@ button {
   animation: result-reveal 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-[data-result-theme='playing'] .result-label {
-  color: var(--accent);
+[data-result-theme='playing'] .result-label,
+[data-result-theme='waiting'] .result-label,
+[data-result-theme='draw'] .result-label {
+  color: var(--accent-soft);
 }
 
 [data-result-theme='win'] .result-label {
   color: var(--win);
+  text-shadow: 0 0 40px rgba(110, 247, 216, 0.45);
 }
 
 [data-result-theme='lose'] .result-label {
   color: var(--lose);
+  text-shadow: 0 0 40px rgba(255, 143, 171, 0.35);
 }
 
-[data-result-theme='draw'] .result-label {
-  color: var(--draw);
+[data-result-theme='win'] .display-stage__backdrop {
+  background:
+    radial-gradient(circle at 50% 20%, rgba(110, 247, 216, 0.24) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(0, 60, 80, 0.35) 0%, rgba(0, 8, 20, 0.95) 100%);
+}
+
+[data-result-theme='lose'] .display-stage__backdrop {
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 143, 171, 0.18) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(40, 0, 24, 0.35) 0%, rgba(0, 8, 20, 0.95) 100%);
 }
 
 .versus {
@@ -207,11 +288,13 @@ button {
 .hand-card {
   display: grid;
   place-items: center;
-  min-height: 280px;
-  padding: 28px;
+  min-height: 220px;
+  padding: 24px;
   background: var(--panel-strong);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: var(--glass-blur);
 }
 
 .hand-card__name,
@@ -224,14 +307,17 @@ button {
 
 .hand-card__icon {
   margin: 18px 0;
-  font-size: clamp(76px, 12vw, 150px);
+  font-size: clamp(64px, 10vw, 120px);
   line-height: 1;
   transition: transform 160ms ease;
+  filter: drop-shadow(0 0 16px rgba(0, 212, 255, 0.22));
 }
 
 .hand-card.is-active {
-  border-color: rgba(248, 200, 78, 0.45);
-  box-shadow: 0 0 0 1px rgba(248, 200, 78, 0.2);
+  border-color: rgba(0, 212, 255, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(0, 212, 255, 0.18),
+    0 0 32px rgba(0, 212, 255, 0.14);
 }
 
 .hand-card.is-cycling .hand-card__icon {
@@ -240,6 +326,25 @@ button {
 
 .hand-card.is-reveal .hand-card__icon {
   animation: hand-reveal 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hand-card__label {
+  color: var(--text);
+  font-size: clamp(24px, 4vw, 42px);
+}
+
+.versus__text {
+  margin: 0;
+  color: var(--accent-soft);
+  font-size: clamp(28px, 5vw, 60px);
+  font-weight: 1000;
+  text-shadow: 0 0 24px var(--accent-glow);
+}
+
+[data-page='controller'] .app {
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(0, 174, 239, 0.12) 0%, transparent 40%),
+    linear-gradient(160deg, var(--bg-light) 0%, var(--bg-mid) 42%, var(--bg-deep) 100%);
 }
 
 @keyframes countdown-pop {
@@ -307,21 +412,13 @@ button {
   }
 }
 
-.hand-card__label {
-  color: var(--text);
-  font-size: clamp(24px, 4vw, 42px);
-}
-
-.versus__text {
-  margin: 0;
-  color: var(--accent);
-  font-size: clamp(28px, 5vw, 60px);
-  font-weight: 1000;
-}
-
 @media (max-width: 760px) {
   .app {
     padding: 16px;
+  }
+
+  .app--display {
+    padding: 0;
   }
 
   .hand-grid,
@@ -333,8 +430,12 @@ button {
     min-height: 150px;
   }
 
-  .display-board {
-    min-height: calc(100vh - 32px);
+  .display-stage {
+    grid-template-rows: minmax(36vh, 1fr) auto;
+  }
+
+  .display-stage__hero {
+    min-height: 36vh;
   }
 
   .versus__text {

@@ -1,6 +1,7 @@
 (() => {
   const socket = io();
-  const board = document.querySelector('.display-board');
+  const board = document.querySelector('.display-stage');
+  const heroImage = document.querySelector('[data-hero-image]');
   const status = document.querySelector('[data-status]');
   const round = document.querySelector('[data-round]');
   const resultLabel = document.querySelector('[data-result-label]');
@@ -44,8 +45,32 @@
     renderResult(state);
   }
 
+  function setTheme(theme) {
+    board.dataset.resultTheme = theme;
+    setHeroImage(theme);
+  }
+
+  function setHeroImage(theme) {
+    const nextSrc = window.Janken.themeImages[theme] || window.Janken.themeImages.waiting;
+    const currentSrc = heroImage.getAttribute('src');
+
+    if (currentSrc === nextSrc) {
+      return;
+    }
+
+    heroImage.classList.add('is-changing');
+
+    const onLoad = () => {
+      heroImage.classList.remove('is-changing');
+      heroImage.removeEventListener('load', onLoad);
+    };
+
+    heroImage.addEventListener('load', onLoad);
+    heroImage.setAttribute('src', nextSrc);
+  }
+
   function renderWaiting() {
-    board.dataset.resultTheme = 'waiting';
+    setTheme('waiting');
     resultLabel.textContent = 'READY';
     resultLabel.classList.remove('is-reveal');
     playerIcon.textContent = '?';
@@ -58,7 +83,7 @@
   }
 
   function renderPlaying(state) {
-    board.dataset.resultTheme = 'playing';
+    setTheme('playing');
     resultLabel.classList.remove('is-reveal');
     playerIcon.textContent = window.Janken.handIcons[state.player];
     playerLabel.textContent = state.labels.player;
@@ -76,7 +101,7 @@
 
   function renderResult(state) {
     const theme = state.result || 'waiting';
-    board.dataset.resultTheme = theme;
+    setTheme(theme);
     resultLabel.textContent = window.Janken.resultText[state.result];
     resultLabel.classList.add('is-reveal');
     playerIcon.textContent = window.Janken.handIcons[state.player];
