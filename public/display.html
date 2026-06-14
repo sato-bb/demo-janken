@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>じゃんけん 結果表示</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body data-page="display">
+  <main class="app app--display">
+    <section class="display-board" data-result-theme="waiting">
+      <div class="display-board__header">
+        <p class="eyebrow">Janken Battle</p>
+        <p class="round">Round <span data-round>0</span></p>
+      </div>
+
+      <div class="result-area">
+        <p class="result-label" data-result-label>待機中</p>
+      </div>
+
+      <div class="versus">
+        <div class="hand-card">
+          <p class="hand-card__name">PLAYER</p>
+          <p class="hand-card__icon" data-player-icon>?</p>
+          <p class="hand-card__label" data-player-label>-</p>
+        </div>
+
+        <p class="versus__text">VS</p>
+
+        <div class="hand-card">
+          <p class="hand-card__name">CPU</p>
+          <p class="hand-card__icon" data-cpu-icon>?</p>
+          <p class="hand-card__label" data-cpu-label>-</p>
+        </div>
+      </div>
+
+      <p class="status-text" data-status>接続中...</p>
+    </section>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/shared.js"></script>
+  <script src="/js/display.js"></script>
+</body>
+</html>

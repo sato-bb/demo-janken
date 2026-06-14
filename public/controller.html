@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>じゃんけん コントローラー</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body data-page="controller">
+  <main class="app app--controller">
+    <section class="panel">
+      <p class="eyebrow">Controller</p>
+      <h1 class="title">じゃんけんの手を選ぶ</h1>
+      <p class="lead">タブレットで操作する画面です。選択するとディスプレイ側に結果が表示されます。</p>
+
+      <div class="hand-grid" aria-label="じゃんけんの手">
+        <button class="hand-button" type="button" data-hand="rock">
+          <span class="hand-button__icon">✊</span>
+          <span class="hand-button__label">ぐー</span>
+        </button>
+        <button class="hand-button" type="button" data-hand="scissors">
+          <span class="hand-button__icon">✌️</span>
+          <span class="hand-button__label">ちょき</span>
+        </button>
+        <button class="hand-button" type="button" data-hand="paper">
+          <span class="hand-button__icon">✋</span>
+          <span class="hand-button__label">ぱー</span>
+        </button>
+      </div>
+
+      <div class="controller-actions">
+        <button class="sub-button" type="button" data-reset>リセット</button>
+      </div>
+
+      <p class="status-text" data-status>接続中...</p>
+    </section>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/shared.js"></script>
+  <script src="/js/controller.js"></script>
+</body>
+</html>
